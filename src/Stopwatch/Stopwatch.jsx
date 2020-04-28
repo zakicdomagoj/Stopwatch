@@ -11,17 +11,17 @@ export class Stopwatch extends React.Component {
   }
 
   onStart = () => {
-    if (this.timerInterval) return;
+    if (this.state.timer === 0) {
+      if (this.timerInterval) return;
 
-    this.timerInterval = setInterval(() => {
-      this.setState({ timer: this.state.timer + 1 });
-    }, 10);
-  };
-
-  onStop = () => {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-      this.timerInterval = null;
+      this.timerInterval = setInterval(() => {
+        this.setState({ timer: this.state.timer + 1 });
+      }, 10);
+    } else {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
     }
   };
 
@@ -36,18 +36,32 @@ export class Stopwatch extends React.Component {
     });
   };
 
+  onClear = () => {
+    this.setState({
+      times: [],
+    });
+  };
+
   render() {
+    let centiseconds = ("0" + (Math.floor(this.state.timer / 10) % 100)).slice(
+      -2
+    );
+    let seconds = ("0" + (Math.floor(this.state.timer / 1000) % 60)).slice(-2);
+    let minutes = ("0" + (Math.floor(this.state.timer / 60000) % 60)).slice(-2);
+    let hours = ("0" + Math.floor(this.state.timer / 3600000)).slice(-2);
     return (
       <div>
-        <div>{this.state.timer}</div>
         <div>
-          <button onClick={this.onStart}>START</button>
-          <button onClick={this.onStop}>STOP</button>
-          <button onClick={this.onLap}>LAP</button>
-          <button onClick={this.onReset}>RESET</button>
+          {hours} : {minutes} : {seconds} : {centiseconds}
         </div>
         <div>
-          {this.state.times.map((time, index) => (
+          <button onClick={this.onStart}>START / STOP</button>
+          <button onClick={this.onLap}>LAP</button>
+          <button onClick={this.onReset}>RESET</button>
+          <button onClick={this.onClear}>CLEAR</button>
+        </div>
+        <div>
+          {this.state.times.reverse().map((time, index) => (
             <div key={index}>{time}</div>
           ))}
         </div>
